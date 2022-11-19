@@ -8,7 +8,7 @@ public class Clickable : MonoBehaviour
 {
     public static event Action<GameObject> OnClick;
 
-    void OnMouseDown()
+    protected virtual void OnMouseDown()
     {
         OnClick?.Invoke(this.gameObject);
     }
