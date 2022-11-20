@@ -63,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
             if (_nodeInPath >= _pathToFollow.Count)
             {
                 _hasPath = false;
-                _nodeInPath = 0;
+                // _nodeInPath = 0;
                 return;
             }
         }
@@ -114,8 +114,12 @@ public class PlayerMovement : MonoBehaviour
 
     void FindPathToTile(Tile target)
     {
-        Map.FindPath(GetCurrentTile(), target, out _pathToFollow);
+        if (target != null)
+        {
+            Map.FindPath(GetCurrentTile(), target, out _pathToFollow);
+        }
 
+        _nodeInPath = 0;
         _hasPath = true;
     }
 

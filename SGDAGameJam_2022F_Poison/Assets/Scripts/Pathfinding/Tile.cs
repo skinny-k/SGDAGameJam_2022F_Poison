@@ -33,9 +33,20 @@ public class Tile : MonoBehaviour, IComparable
         parentMap = parentRow.transform.parent.GetComponent<Map>();
     }
 
-    void OnMouseDown()
+    public void ClickTile()
     {
-        OnClick?.Invoke(this);
+        Tile navigateToTile;
+        
+        if (walkable)
+        {
+            navigateToTile = this;
+        }
+        else
+        {
+            navigateToTile = GetNearestWalkableTile();
+        }
+
+        OnClick?.Invoke(navigateToTile);
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -109,5 +120,19 @@ public class Tile : MonoBehaviour, IComparable
         }
 
         return neighbors;
+    }
+
+    Tile GetNearestWalkableTile()
+    {
+        List<Tile> tiles = GetNeighbors();
+
+        if (tiles.Count > 0)
+        {
+            return tiles[UnityEngine.Random.Range(0, tiles.Count)];
+        }
+        else
+        {
+            return null;
+        }
     }
 }
