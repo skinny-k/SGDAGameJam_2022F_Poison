@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile : MonoBehaviour, IComparable
+public class Tile : MonoBehaviour, IComparable, IInteractable
 {
     Map parentMap;
     TileRow parentRow;
@@ -33,7 +33,13 @@ public class Tile : MonoBehaviour, IComparable
         parentMap = parentRow.transform.parent.GetComponent<Map>();
     }
 
-    public void ClickTile()
+    public bool Interact(Player player)
+    {
+        ClickTile(player);
+        return true;
+    }
+
+    void ClickTile(Player player)
     {
         Tile navigateToTile;
         
@@ -43,7 +49,7 @@ public class Tile : MonoBehaviour, IComparable
         }
         else
         {
-            navigateToTile = GetNearestWalkableTile();
+            navigateToTile = GetNearestWalkableTile(player);
         }
 
         OnClick?.Invoke(navigateToTile);
@@ -122,13 +128,29 @@ public class Tile : MonoBehaviour, IComparable
         return neighbors;
     }
 
-    Tile GetNearestWalkableTile()
+    Tile GetNearestWalkableTile(Player player)
     {
         List<Tile> tiles = GetNeighbors();
 
         if (tiles.Count > 0)
         {
-            return tiles[UnityEngine.Random.Range(0, tiles.Count)];
+            Tile nearestTile = null;
+            List<Tile> pathToNearestTile = new List<Tile>();
+            List<Tile> pathToNewTile = new List<Tile>();
+
+            foreach (Tile tile in tiles)
+            {
+                Map.FindPath(player.GetComponent<PlayerMovement>().CurrentTile, tile, out pathToNewTile);
+                
+                if (nearestTile == null || pathToNewTile.Count < pathToNearestTile.Count)
+                {
+                    nearestTile = tile;
+                    pathToNearestTile = new List<Tile>(pathToNewTile);
+                    continue;
+                }
+            }
+            
+            return nearestTile;
         }
         else
         {

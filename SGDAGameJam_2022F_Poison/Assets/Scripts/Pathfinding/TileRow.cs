@@ -21,6 +21,13 @@ public class TileRow : MonoBehaviour
 
     public Tile GetTile(int index)
     {
-        return transform.GetChild(index).GetComponent<Tile>();
+        if (index < transform.childCount)
+        {
+            return transform.GetChild(index).GetComponent<Tile>();
+        }
+        else
+        {
+            return null;
+        }
     }
 }

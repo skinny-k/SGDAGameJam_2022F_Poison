@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,15 @@ public class PlayerMovement : MonoBehaviour
     int _nodeInPath = 0;
     bool _hasPath = false;
     Rigidbody2D _rb;
+    PlayerPickup _pickup;
     Vector3 _movementThisFrame = Vector3.zero;
+
+    public static event Action OnNewMovement;
+
+    public Tile CurrentTile
+    {
+        get => GetCurrentTile();
+    }
     
     void OnEnable()
     {
@@ -25,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _pickup = GetComponent<PlayerPickup>();
     }
     
     void Update()
@@ -50,6 +60,9 @@ public class PlayerMovement : MonoBehaviour
             _rb.MovePosition(transform.position + _movementThisFrame);
 
             _hasPath = false;
+
+            // _pickup.ClearExpectations();
+            OnNewMovement?.Invoke();
         }
     }
 
@@ -63,7 +76,6 @@ public class PlayerMovement : MonoBehaviour
             if (_nodeInPath >= _pathToFollow.Count)
             {
                 _hasPath = false;
-                // _nodeInPath = 0;
                 return;
             }
         }
@@ -119,6 +131,9 @@ public class PlayerMovement : MonoBehaviour
             Map.FindPath(GetCurrentTile(), target, out _pathToFollow);
         }
 
+        // _pickup.ClearExpectations();
+        OnNewMovement?.Invoke();
+        
         _nodeInPath = 0;
         _hasPath = true;
     }
