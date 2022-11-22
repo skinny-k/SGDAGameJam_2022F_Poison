@@ -9,7 +9,7 @@ public class DynamicSprite : MonoBehaviour
         SetPositionZ();
     }
 
-    protected virtual void SetPositionZ()
+    public virtual void SetPositionZ()
     {
         transform.position = new Vector3 (transform.position.x, transform.position.y, transform.position.y - 20);
     }

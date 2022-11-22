@@ -6,10 +6,11 @@ public class Table : MonoBehaviour, IInteractable
 {
     [SerializeField] Transform _holdLocation = null;
     [SerializeField] float _pickupDistance = 2.75f;
+    [SerializeField] LayerMask _itemLayers = 0;
+    [SerializeField] LayerMask _toolLayers = 0;
     
     PlayerPickup _playerIncoming;
-    Item _itemHolding = null;
-    // bool _expectingPickup = false;
+    protected Item _itemHolding = null;
     bool _expectingDropoff = false;
     
     public bool Interact(Player player)
@@ -20,6 +21,34 @@ public class Table : MonoBehaviour, IInteractable
     void OnEnable()
     {
         PlayerMovement.OnNewMovement += ResetExpectations;
+    }
+
+    void Start()
+    {
+        ContactFilter2D itemFilter = new ContactFilter2D();
+        itemFilter.NoFilter();
+        itemFilter.SetLayerMask(_itemLayers);
+        List<Collider2D> itemColliders = new List<Collider2D>();
+
+        GetComponent<Collider2D>().OverlapCollider(itemFilter, itemColliders);
+        if (itemColliders.Count == 1)
+        {
+            ReceiveItem(itemColliders[0].GetComponent<Item>());
+        }
+        else
+        {
+            ContactFilter2D toolFilter = new ContactFilter2D();
+            toolFilter.NoFilter();
+            toolFilter.SetLayerMask(_toolLayers);
+            List<Collider2D> toolColliders = new List<Collider2D>();
+
+            GetComponent<Collider2D>().OverlapCollider(toolFilter, toolColliders);
+            if (toolColliders.Count == 1)
+            {
+                gameObject.layer = LayerMask.NameToLayer("Default");
+                this.enabled = false;
+            }
+        }
     }
     
     bool ClickTable(Player player)
@@ -54,12 +83,11 @@ public class Table : MonoBehaviour, IInteractable
 
     public void ResetExpectations()
     {
-        // _expectingPickup = false;
         _expectingDropoff = false;
         _playerIncoming = null;
     }
 
-    public bool ReceiveItem(Item itemToReceive)
+    public virtual bool ReceiveItem(Item itemToReceive)
     {
         ResetExpectations();
         if (_itemHolding == null)
@@ -67,6 +95,7 @@ public class Table : MonoBehaviour, IInteractable
             _itemHolding = itemToReceive;
             _itemHolding.OnPickUp += ReleaseItem;
             _itemHolding.transform.position = _holdLocation.position - new Vector3(0, 0, 0.01f);
+            _itemHolding.GetComponent<InteractableSprite>().SetPositionZ();
             return true;
         }
         else
@@ -97,15 +126,6 @@ public class Table : MonoBehaviour, IInteractable
                 _playerIncoming.PutDownItem(this);
                 ResetExpectations();
             }
-        }
-    }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        Item itemOnMe = other.gameObject.GetComponent<Item>();
-        if (itemOnMe != null)
-        {
-            ReceiveItem(itemOnMe);
         }
     }
 

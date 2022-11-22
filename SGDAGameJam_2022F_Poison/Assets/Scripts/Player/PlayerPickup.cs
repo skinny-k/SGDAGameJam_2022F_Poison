@@ -7,6 +7,10 @@ public class PlayerPickup : MonoBehaviour
     [SerializeField] Transform _holdLocation = null;
     
     Item _heldItem = null;
+    public Item HeldItem
+    {
+        get => _heldItem;
+    }
     public bool HasItem
     {
         get => !(_heldItem == null);
@@ -33,6 +37,17 @@ public class PlayerPickup : MonoBehaviour
             _heldItem.PutDown();
             _heldItem = null;
         }
+    }
+
+    public void ReleaseItem()
+    {
+        _heldItem = null;
+    }
+
+    public void DestroyItem()
+    {
+        Destroy(_heldItem.gameObject);
+        _heldItem = null;
     }
 
     void Update()

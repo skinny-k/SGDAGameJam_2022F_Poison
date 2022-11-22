@@ -9,16 +9,15 @@ public class Item : MonoBehaviour, IInteractable
 
     PlayerPickup _playerIncoming;
     PlayerPickup _playerHolding;
-    ItemSprite _mySprite;
-    bool _needsPickup = false;
+    InteractableSprite _mySprite;
+    bool _expectingPickup = false;
 
     public event Action<PlayerPickup> OnPickUp;
     public event Action<PlayerPickup> OnPutDown;
     
     public bool Interact(Player player)
     {
-        ClickItem(player);
-        return true;
+        return ClickItem(player);
     }
 
     void OnEnable()
@@ -28,31 +27,33 @@ public class Item : MonoBehaviour, IInteractable
 
     void Awake()
     {
-        _mySprite = GetComponent<ItemSprite>();
+        _mySprite = GetComponent<InteractableSprite>();
     }
     
-    void ClickItem(Player player)
+    bool ClickItem(Player player)
     {
         if (_playerIncoming == null)
         {
-            _needsPickup = true;
+            _expectingPickup = true;
             _playerIncoming = player.GetComponent<PlayerPickup>();
+            return true;
         }
         else
         {
             ResetExpectations();
+            return false;
         }
     }
 
     public void ResetExpectations()
     {
-        _needsPickup = false;
+        _expectingPickup = false;
         _playerIncoming = null;
     }
 
     void Update()
     {
-        if (_needsPickup && _playerIncoming != null)
+        if (_expectingPickup && _playerIncoming != null)
         {
             Vector3 posWithoutZ = transform.position;
             Vector3 playerIncomingPosWithoutZ = _playerIncoming.transform.position;
@@ -62,7 +63,7 @@ public class Item : MonoBehaviour, IInteractable
             if (Vector3.Distance(posWithoutZ, playerIncomingPosWithoutZ) <= _pickupDistance)
             {
                 _playerIncoming.PickUpItem(this);
-                _needsPickup = false;
+                _expectingPickup = false;
             }
         }
     }

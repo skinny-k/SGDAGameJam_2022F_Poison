@@ -7,7 +7,6 @@ public class MouseTracker : MonoBehaviour
     [SerializeField] Player _myPlayer = null;
     
     [SerializeField] LayerMask _tileLayers = 0;
-    [SerializeField] LayerMask _itemLayers = 0;
     [SerializeField] LayerMask _interactableLayers = 0;
     [SerializeField] LayerMask _tableLayers = 0;
     
