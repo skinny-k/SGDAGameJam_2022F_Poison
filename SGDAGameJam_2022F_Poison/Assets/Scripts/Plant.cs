@@ -25,7 +25,7 @@ public class Plant : MonoBehaviour, IInteractable
 
     bool ClickPlant(Player player)
     {
-        if (player.GetComponent<PlayerPickup>() != null && player.GetComponent<PlayerPickup>().HeldItem.GetComponent<Fertilizer>() != null)
+        if (player.GetComponent<PlayerPickup>() != null && player.GetComponent<PlayerPickup>().HeldItem != null && player.GetComponent<PlayerPickup>().HeldItem.GetComponent<Fertilizer>() != null)
         {
             _expectingDropoff = true;
             _playerIncoming = player.GetComponent<PlayerPickup>();

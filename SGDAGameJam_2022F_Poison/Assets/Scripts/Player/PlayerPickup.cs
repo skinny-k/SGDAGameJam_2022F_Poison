@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,9 @@ public class PlayerPickup : MonoBehaviour
     {
         get => !(_heldItem == null);
     }
+
+    public static event Action<Item> OnItemPickup;
+    public static event Action OnItemRelease;
     
     public bool PickUpItem(Item itemToPickUp)
     {
@@ -22,6 +26,7 @@ public class PlayerPickup : MonoBehaviour
         {
             _heldItem = itemToPickUp;
             _heldItem.PickUpBy(this);
+            OnItemPickup?.Invoke(_heldItem);
             return true;
         }
         else
@@ -35,19 +40,20 @@ public class PlayerPickup : MonoBehaviour
         if (tableToPlaceOn.ReceiveItem(_heldItem))
         {
             _heldItem.PutDown();
-            _heldItem = null;
+            ReleaseItem();
         }
     }
 
     public void ReleaseItem()
     {
         _heldItem = null;
+        OnItemRelease?.Invoke();
     }
 
     public void DestroyItem()
     {
         Destroy(_heldItem.gameObject);
-        _heldItem = null;
+        ReleaseItem();
     }
 
     void Update()

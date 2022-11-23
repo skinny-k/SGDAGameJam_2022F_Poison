@@ -66,11 +66,20 @@ public class Map : MonoBehaviour
     static List<Tile> GetWalkableTiles(Tile currentTile, Tile targetTile)
     {
         List<Tile> possibleTiles = currentTile.GetNeighbors();
-
-        foreach (Tile tile in possibleTiles)
+        
+        foreach (Tile tile in new List<Tile>(possibleTiles))
         {
-            tile.SetDistance(targetTile.x, targetTile.y);
+            if (tile.walkable)
+            {
+                tile.SetDistance(targetTile.x, targetTile.y);
+            }
+            else
+            {
+                possibleTiles.Remove(tile);
+            }
         }
+
+        possibleTiles.TrimExcess();
 
         return possibleTiles;
     }

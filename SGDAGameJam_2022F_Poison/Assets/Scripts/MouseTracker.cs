@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,11 @@ public class MouseTracker : MonoBehaviour
     [SerializeField] LayerMask _tileLayers = 0;
     [SerializeField] LayerMask _interactableLayers = 0;
     [SerializeField] LayerMask _tableLayers = 0;
+    
+    void Start()
+    {
+        UnityEngine.Random.InitState((int)DateTime.Now.Ticks);
+    }
     
     void Update()
     {

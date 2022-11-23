@@ -136,4 +136,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pickupDistance: 3
+  _startingPickupDistance: 5
   _ingredientType: 1
