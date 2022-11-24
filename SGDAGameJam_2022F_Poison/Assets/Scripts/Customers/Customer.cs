@@ -8,19 +8,26 @@ public class Customer : MonoBehaviour, IInteractable
     [SerializeField] float _pickupDistance = 5.5f;
     [SerializeField] float _despawnDelay = 1.5f;
     [SerializeField] float _timeout = 25f;
+
+    int _customerIndex = 0;
+    public int CustomerIndex
+    {
+        get => _customerIndex;
+        set => _customerIndex = value;
+    }
     
     protected CustomerSprite _mySprite = null;
     protected Order _myOrder = null;
     PlayerPickup _playerIncoming;
     Potion _potionIncoming;
     bool _expectingDropoff = false;
-    // bool _dead = false;
     bool _interactable = true;
     float _timer = 0f;
 
-    public static event Action<Order> OnOrderComplete;
+    public static event Action<Order, bool> OnOrderComplete;
     public static event Action OnDeath;
     public static event Action OnTimeout;
+    public static event Action<Customer> OnDespawn;
     
     public bool Interact(Player player)
     {
@@ -69,6 +76,7 @@ public class Customer : MonoBehaviour, IInteractable
     
     void Awake()
     {
+        Debug.Log("Customer " + _customerIndex + "'s Order");
         _myOrder = OrderGenerator.GenerateOrder();
         _mySprite = GetComponent<CustomerSprite>();
     }
@@ -89,7 +97,7 @@ public class Customer : MonoBehaviour, IInteractable
                     case -1:
                         _playerIncoming.DestroyItem();
                         Debug.Log("It's poison!");
-                        OnOrderComplete?.Invoke(_myOrder);
+                        OnOrderComplete?.Invoke(_myOrder, true);
                         StartCoroutine(Die());
                         break;
                     case 0:
@@ -99,7 +107,7 @@ public class Customer : MonoBehaviour, IInteractable
                     case 1:
                         _playerIncoming.DestroyItem();
                         Debug.Log("Tastes good!");
-                        OnOrderComplete?.Invoke(_myOrder);
+                        OnOrderComplete?.Invoke(_myOrder, false);
                         StartCoroutine(Leave());
                         break;
                 }
@@ -143,12 +151,11 @@ public class Customer : MonoBehaviour, IInteractable
     IEnumerator Die()
     {
         _mySprite.Die();
-        // _dead = true;
         _interactable = false;
-        OnDeath?.Invoke();
 
         yield return new WaitForSeconds(_despawnDelay);
         
+        OnDeath?.Invoke();
         _mySprite.FadeOut();
     }
 
@@ -166,5 +173,10 @@ public class Customer : MonoBehaviour, IInteractable
         PlayerMovement.OnNewMovement -= ResetExpectations;
         PlayerPickup.OnItemPickup -= TurnOnHighlight;
         PlayerPickup.OnItemRelease -= TurnOffHighlight;
+    }
+
+    void OnDestroy()
+    {
+        OnDespawn?.Invoke(this);
     }
 }

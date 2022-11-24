@@ -11,11 +11,6 @@ public class MouseTracker : MonoBehaviour
     [SerializeField] LayerMask _interactableLayers = 0;
     [SerializeField] LayerMask _tableLayers = 0;
     
-    void Start()
-    {
-        UnityEngine.Random.InitState((int)DateTime.Now.Ticks);
-    }
-    
     void Update()
     {
         if (Input.GetMouseButtonDown(0))

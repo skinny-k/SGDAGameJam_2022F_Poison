@@ -52,6 +52,28 @@ public class Order
         }
     }
 
+    public int GetReward(int valuePerIngredient, bool isPoison)
+    {
+        int[] _orderFilled;
+        int reward = 0;
+
+        if (isPoison)
+        {
+            _orderFilled = _myPoisonSolution;
+        }
+        else
+        {
+            _orderFilled = _mySafeSolution;
+        }
+
+        foreach (int ingredientCount in _orderFilled)
+        {
+            reward += ingredientCount * valuePerIngredient;
+        }
+
+        return reward;
+    }
+
     public override string ToString()
     {
         string safeSolutionString = "(";
