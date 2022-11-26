@@ -6,7 +6,15 @@ using UnityEngine;
 public class Order
 {
     int[] _mySafeSolution = new int[OrderGenerator.NumIngredientTypes];
+    public int[] SafeSolution
+    {
+        get => _mySafeSolution;
+    }
     int[] _myPoisonSolution = new int[OrderGenerator.NumIngredientTypes];
+    public int[] PoisonSolution
+    {
+        get => _myPoisonSolution;
+    }
     
     public Order(int[] safeSolution, int[] poisonSolution)
     {

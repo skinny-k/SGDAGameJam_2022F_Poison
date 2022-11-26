@@ -52,7 +52,10 @@ public class PlayerPickup : MonoBehaviour
 
     public void DestroyItem()
     {
-        Destroy(_heldItem.gameObject);
+        if (_heldItem != null)
+        {
+            Destroy(_heldItem.gameObject);
+        }
         ReleaseItem();
     }
 

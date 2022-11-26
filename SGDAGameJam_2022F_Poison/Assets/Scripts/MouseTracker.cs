@@ -13,7 +13,7 @@ public class MouseTracker : MonoBehaviour
     
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && Time.timeScale == 1)
         {
             CheckForTile();
 

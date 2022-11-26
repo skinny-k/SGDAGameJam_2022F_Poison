@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ public class Potion : Item
         get => _ingredients;
     }
     int _totalIngredients = 0;
+
+    public static event Action<int[]> OnPotionContentsShow;
+    public static event Action OnPotionContentsHide;
     
     protected override void Awake()
     {
@@ -38,19 +42,13 @@ public class Potion : Item
         HideContents();
     }
 
-    void ShowContents()
+    public void ShowContents()
     {
-        /*
-        Debug.Log("Ingredient List:");
-        for (int i = 0; i < _ingredients.Length; i++)
-        {
-            Debug.Log("Ingredient " + i + " x" + _ingredients[i]);
-        }
-        */
+        OnPotionContentsShow?.Invoke(_ingredients);
     }
 
-    void HideContents()
+    public void HideContents()
     {
-        //
+        OnPotionContentsHide?.Invoke();
     }
 }

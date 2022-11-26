@@ -43,6 +43,7 @@ public class CustomerSpawner : MonoBehaviour
         if (_timer >= _spawnInterval)
         {
             SpawnCustomers();
+            _timer = 0;
         }
     }
 
@@ -52,7 +53,7 @@ public class CustomerSpawner : MonoBehaviour
         
         for (int i = 0; i < _spawnNodes.Length; i++)
         {
-            if (_customers[i] == null && (Random.Range(0.0f, 100.0f) / 100) <= _spawnChance)
+            if (_customers[i] == null && Random.Range(0.0f, 100.0f) <= _spawnChance)
             {
                 Customer customerSpawned = Instantiate(_customerPrefab, _spawnNodes[i].position, Quaternion.identity);
                 _customers[i] = customerSpawned;

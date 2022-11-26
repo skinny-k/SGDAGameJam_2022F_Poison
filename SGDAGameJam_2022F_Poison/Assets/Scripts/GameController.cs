@@ -20,6 +20,12 @@ public class GameController : MonoBehaviour
     [SerializeField] float _customerDeathSuspicionAmount = 10f;
     [SerializeField] float _customerTimeoutSuspicionAmount = 5f;
 
+    [Header("Game End Settings")]
+    [SerializeField] int _goldToWin = 100;
+    [SerializeField] string _winSceneName = "Win Scene";
+    [SerializeField] float _maxSuspicion = 100f;
+    [SerializeField] string _loseSceneName = "Los Scene";
+
     float _suspicion = 0f;
     int _gold = 0;
     
@@ -81,13 +87,27 @@ public class GameController : MonoBehaviour
 
     void HandleCompletedOrder(Order orderCompleted, bool wasPoisoned)
     {
-        _gold += orderCompleted.GetReward(_rewardAmountPerIngredient, wasPoisoned);
+        int reward = orderCompleted.GetReward(_rewardAmountPerIngredient, wasPoisoned);
+        GiveGold(reward);
+    }
+
+    void GiveGold(int amount)
+    {
+        _gold += amount;
         _goldText.text = _gold + "";
+        if (_gold >= _goldToWin)
+        {
+            TransitionManager.Instance.TransitionToScene(_loseSceneName);
+        }
     }
 
     void IncreaseSuspicion(float amount)
     {
         _suspicion += amount;
+        if (_suspicion >= _maxSuspicion)
+        {
+            TransitionManager.Instance.TransitionToScene(_winSceneName);
+        }
     }
 
     void OnDisable()

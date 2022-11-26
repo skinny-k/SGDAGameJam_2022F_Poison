@@ -167,7 +167,24 @@ public class IngredientMixer : MonoBehaviour, IInteractable
     {
         OnCollect?.Invoke();
         _myPotion.OnPickUp -= Collect;
+        _myPotion.HideContents();
         _myPotion = null;
+    }
+
+    void OnMouseEnter()
+    {
+        if (_myPotion != null && _myPotion.Ingredients.Length > 0)
+        {
+            _myPotion.ShowContents();
+        }
+    }
+
+    void OnMouseExit()
+    {
+        if (_myPotion != null)
+        {
+            _myPotion.HideContents();
+        }
     }
 
     void OnDisable()

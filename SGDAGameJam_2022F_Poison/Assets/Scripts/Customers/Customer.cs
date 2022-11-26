@@ -15,6 +15,7 @@ public class Customer : MonoBehaviour, IInteractable
         get => _customerIndex;
         set => _customerIndex = value;
     }
+    bool _orderRendered = false;
     
     protected CustomerSprite _mySprite = null;
     protected Order _myOrder = null;
@@ -76,13 +77,18 @@ public class Customer : MonoBehaviour, IInteractable
     
     void Awake()
     {
-        Debug.Log("Customer " + _customerIndex + "'s Order");
         _myOrder = OrderGenerator.GenerateOrder();
         _mySprite = GetComponent<CustomerSprite>();
     }
 
     void Update()
     {
+        if (_orderRendered == false)
+        {
+            OrderDisplayTool.DisplayOrder(_myOrder, _customerIndex);
+            _orderRendered = true;
+        }
+        
         if (_interactable && _expectingDropoff && _playerIncoming != null)
         {
             Vector3 posWithoutZ = transform.position;
@@ -90,7 +96,7 @@ public class Customer : MonoBehaviour, IInteractable
             posWithoutZ.z = 0;
             playerIncomingPosWithoutZ.z = 0;
         
-            if (_expectingDropoff && Vector3.Distance(posWithoutZ, playerIncomingPosWithoutZ) <= _pickupDistance)
+            if (Vector3.Distance(posWithoutZ, playerIncomingPosWithoutZ) <= _pickupDistance)
             {
                 switch (_myOrder.ComparePotion(_potionIncoming))
                 {
@@ -98,6 +104,7 @@ public class Customer : MonoBehaviour, IInteractable
                         _playerIncoming.DestroyItem();
                         Debug.Log("It's poison!");
                         OnOrderComplete?.Invoke(_myOrder, true);
+                        OrderDisplayTool.HideTicket(_customerIndex);
                         StartCoroutine(Die());
                         break;
                     case 0:
@@ -108,6 +115,7 @@ public class Customer : MonoBehaviour, IInteractable
                         _playerIncoming.DestroyItem();
                         Debug.Log("Tastes good!");
                         OnOrderComplete?.Invoke(_myOrder, false);
+                        OrderDisplayTool.HideTicket(_customerIndex);
                         StartCoroutine(Leave());
                         break;
                 }
@@ -118,8 +126,9 @@ public class Customer : MonoBehaviour, IInteractable
         _timer += Time.deltaTime;
         if (_interactable && _timer >= _timeout)
         {
-            OnTimeout?.Invoke();
             Debug.Log("The service here is terrible!");
+            OnTimeout?.Invoke();
+            OrderDisplayTool.HideTicket(_customerIndex);
             StartCoroutine(Leave());
         }
     }
